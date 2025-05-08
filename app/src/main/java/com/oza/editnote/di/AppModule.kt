@@ -24,4 +24,21 @@ object AppModule {
     fun providePageRepository(api: PageApi): PageRepository {
         return PageRepositoryImpl(api)
     }
+
+    @Provides
+    fun provideGetPagesUseCase(repository: PageRepository): GetPagesUseCase {
+        return GetPagesUseCase(repository)
+    }
+
+    @Provides
+    fun provideCreatePageUseCase(repository: PageRepository): CreatePageUseCase =
+        CreatePageUseCase(repository)
+
+    @Provides
+    fun provideUpdatePageUseCase(repository: PageRepository): UpdatePageUseCase =
+        UpdatePageUseCase(repository)
+
+    @Provides
+    fun provideDeletePageUseCase(repository: PageRepository): DeletePageUseCase =
+        DeletePageUseCase(repository)
 }
