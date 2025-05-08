@@ -1,3 +1,7 @@
+import java.io.ByteArrayOutputStream
+import java.io.File
+import org.gradle.api.tasks.Exec
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -42,6 +46,49 @@ android {
     }
 }
 
+// USB 実機／エミュレータどちらでも localhost:3000 を開発マシンに向ける
+tasks.register<Exec>("adbReverse") {
+    group = "development"
+    description = "実機デバッグ用に adb reverse tcp:3000 を自動設定"
+
+    // configuration 時に adb 実行ファイルを解決
+    val sdkRoot = System.getenv("ANDROID_SDK_ROOT") ?: System.getenv("ANDROID_HOME")
+    val candidates = listOfNotNull(
+        sdkRoot?.let { "$it/platform-tools/adb" },
+        "adb"  // PATH にあれば
+    )
+    val adbExe = candidates.firstOrNull { File(it).exists() }
+    if (adbExe == null) {
+        // adb が見つからないなら最初からタスクを無効化
+        enabled = false
+        return@register
+    }
+
+    // 実機接続がないときはスキップ
+    onlyIf {
+        val out = ByteArrayOutputStream()
+        project.exec {
+            commandLine(adbExe, "devices")
+            isIgnoreExitValue = true
+            standardOutput = out
+        }
+        out.toString().contains("\tdevice")
+    }
+
+    // adb reverse の失敗でビルドを止めない
+    isIgnoreExitValue = true
+
+    // 最後にコマンドをセット
+    commandLine(adbExe, "reverse", "tcp:3000", "tcp:3000")
+}
+
+// installDebug／assembleDebug の前に必ず adbReverse を走らせる
+tasks.matching {
+    it.name == "installDebug" || it.name == "assembleDebug"
+}.configureEach {
+    dependsOn("adbReverse")
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -52,7 +99,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -77,4 +123,10 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     // AndroidX版Hiltの ViewModel 拡張やナビゲーションの連携処理を生成するコンパイラ
     kapt(libs.androidx.hilt.compiler)
+
+    // --- Unit Test ライブラリ ---
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.junit)
 }
