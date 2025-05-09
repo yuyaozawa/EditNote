@@ -21,11 +21,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import com.oza.editnote.R
 import com.oza.editnote.domain.model.Page
+import com.oza.editnote.domain.usecase.ICreatePageUseCase
+import com.oza.editnote.domain.usecase.IDeletePageUseCase
+import com.oza.editnote.domain.usecase.IGetPagesUseCase
+import com.oza.editnote.domain.usecase.IUpdatePageUseCase
 import com.oza.editnote.presentation.screen.list.EditNoteTheme.PrimaryBlue
 import com.oza.editnote.presentation.screen.list.Spacing.borderWidth
 import com.oza.editnote.presentation.screen.list.Spacing.buttonHeight
@@ -33,6 +39,7 @@ import com.oza.editnote.presentation.screen.list.Spacing.buttonWidth
 import com.oza.editnote.presentation.screen.list.Spacing.cornerRadius
 import com.oza.editnote.presentation.screen.list.Spacing.smallButtonWidth
 import com.oza.editnote.presentation.screen.list.Spacing.xl
+import com.oza.editnote.ui.theme.EditNoteTheme
 import kotlinx.coroutines.launch
 
 private object EditNoteTheme {
@@ -846,5 +853,44 @@ fun AddNewPageButton(
                 style = MaterialTheme.typography.labelSmall
             )
         }
+    }
+}
+
+@Preview(
+    name = "PageListScreen Preview",
+    showBackground = true,
+    showSystemUi = true,
+    device = "spec:width=360dp,height=640dp"
+)
+@Composable
+fun PageListScreenPreview() {
+    EditNoteTheme {
+        // 匿名クラスで直接 UseCase をモック
+        val previewVm = PageListViewModel(
+            getPagesUseCase = object : IGetPagesUseCase {
+                override suspend fun invoke(): List<Page> =
+                    listOf(Page(id = 1, title = "プレビュータイトル", body = "プレビュー本文"))
+            },
+            createPageUseCase = object : ICreatePageUseCase {
+                override suspend fun invoke(page: Page): Page = page.copy(id = 2)
+            },
+            deletePageUseCase = object : IDeletePageUseCase {
+                override suspend fun invoke(id: Int) = Result.success(Unit)
+            },
+            updatePageUseCase = object : IUpdatePageUseCase {
+                override suspend fun invoke(page: Page) = Result.success(Unit)
+            }
+        ).apply {
+            // init で呼ばれる loadPages() はスコープ上のコルーチンなので、
+            // プレビューでは手動で即時値を設定しておく
+            viewModelScope.launch {
+                _uiState.value = PageListUiState.Success(
+                    listOf(Page(id = 1, title = "プレビュータイトル", body = "プレビュー本文"))
+                )
+                _selectedPageId.value = 1
+            }
+        }
+
+        PageListScreen(viewModel = previewVm)
     }
 }
