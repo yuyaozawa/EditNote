@@ -21,7 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EditNoteTheme {
-                Greeting("Hello World")
+                Surface {
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
+                }
             }
         }
     }

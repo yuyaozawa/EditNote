@@ -3,6 +3,9 @@ package com.oza.editnote.domain.usecase
 import com.oza.editnote.domain.model.Page
 import com.oza.editnote.domain.repository.PageRepository
 
+interface IUpdatePageUseCase {
+    suspend operator fun invoke(page: Page): Result<Unit>
+}
 /**
  * ページ更新用のユースケース。
  *
@@ -10,8 +13,14 @@ import com.oza.editnote.domain.repository.PageRepository
  */
 class UpdatePageUseCase(
     private val repository: PageRepository
-) {
-    suspend operator fun invoke(page: Page): Page {
-        return repository.updatePage(page)
+) : IUpdatePageUseCase {
+    override suspend fun invoke(page: Page): Result<Unit> = try {
+        // リポジトリの更新処理を呼び出し（戻り値は無視）
+        repository.updatePage(page)
+        // 正常終了なら Result.success(Unit)
+        Result.success(Unit)
+    } catch (e: Exception) {
+        // 失敗時は Result.failure(e)
+        Result.failure(e)
     }
 }
