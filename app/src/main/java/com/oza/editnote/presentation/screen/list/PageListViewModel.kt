@@ -6,6 +6,10 @@ import com.oza.editnote.domain.model.Page
 import com.oza.editnote.domain.usecase.CreatePageUseCase
 import com.oza.editnote.domain.usecase.DeletePageUseCase
 import com.oza.editnote.domain.usecase.GetPagesUseCase
+import com.oza.editnote.domain.usecase.ICreatePageUseCase
+import com.oza.editnote.domain.usecase.IDeletePageUseCase
+import com.oza.editnote.domain.usecase.IGetPagesUseCase
+import com.oza.editnote.domain.usecase.IUpdatePageUseCase
 import com.oza.editnote.domain.usecase.UpdatePageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -27,36 +31,36 @@ sealed class PageListUiState {
 }
 
 @HiltViewModel
-class PageListViewModel @Inject constructor(
-    private val getPagesUseCase: GetPagesUseCase,
-    private val createPageUseCase: CreatePageUseCase,
-    private val deletePageUseCase: DeletePageUseCase,
-    private val updatePageUseCase: UpdatePageUseCase
+open class PageListViewModel @Inject constructor(
+    private val getPagesUseCase: IGetPagesUseCase,
+    private val createPageUseCase: ICreatePageUseCase,
+    private val deletePageUseCase: IDeletePageUseCase,
+    private val updatePageUseCase: IUpdatePageUseCase
 ) : ViewModel() {
 
     // UIの状態を管理するStateFlow
     private val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
-    val uiState: StateFlow<PageListUiState> = _uiState.asStateFlow()
+    open val uiState: StateFlow<PageListUiState> = _uiState.asStateFlow()
 
     // 選択中のページID
     private val _selectedPageId = MutableStateFlow<Int?>(null)
-    val selectedPageId: StateFlow<Int?> = _selectedPageId.asStateFlow()
+    open val selectedPageId: StateFlow<Int?> = _selectedPageId.asStateFlow()
 
     // 編集モードかどうか
     private val _isEditMode = MutableStateFlow(false)
-    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+    open val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
 
     // 削除ダイアログを表示する対象ID
     private val _showDeleteDialogFor = MutableStateFlow<Int?>(null)
-    val showDeleteDialogFor: StateFlow<Int?> = _showDeleteDialogFor.asStateFlow()
+    open val showDeleteDialogFor: StateFlow<Int?> = _showDeleteDialogFor.asStateFlow()
 
     // 追加ダイアログの表示フラグ
     private val _showAddDialog = MutableStateFlow(false)
-    val showAddDialog: StateFlow<Boolean> = _showAddDialog.asStateFlow()
+    open val showAddDialog: StateFlow<Boolean> = _showAddDialog.asStateFlow()
 
     // 新規ページのタイトル
     private val _newTitle = MutableStateFlow("")
-    val newTitle: StateFlow<String> = _newTitle.asStateFlow()
+    open val newTitle: StateFlow<String> = _newTitle.asStateFlow()
 
     // 一時的な通知イベント（Snackbar用）
     private val _successEvent = MutableSharedFlow<String?>()
@@ -145,32 +149,32 @@ class PageListViewModel @Inject constructor(
     /**
      * 以下、UIの状態やダイアログ制御用のシンプルなメソッド群
      */
-    fun selectPage(id: Int) {
+    open fun selectPage(id: Int) {
         _selectedPageId.value = id
     }
 
-    fun toggleEditMode() {
+    open fun toggleEditMode() {
         _isEditMode.value = !_isEditMode.value
     }
 
-    fun showDeleteDialog(id: Int) {
+    open fun showDeleteDialog(id: Int) {
         _showDeleteDialogFor.value = id
     }
 
-    fun dismissDeleteDialog() {
+    open fun dismissDeleteDialog() {
         _showDeleteDialogFor.value = null
     }
 
-    fun showAddDialog() {
+    open fun showAddDialog() {
         _newTitle.value = ""
         _showAddDialog.value = true
     }
 
-    fun dismissAddDialog() {
+    open fun dismissAddDialog() {
         _showAddDialog.value = false
     }
 
-    fun updateNewTitle(text: String) {
+    open fun updateNewTitle(text: String) {
         _newTitle.value = text
     }
 

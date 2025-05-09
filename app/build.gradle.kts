@@ -103,6 +103,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     // Retrofit 本体：HTTP 通信を行うためのライブラリ（APIクライアント）
@@ -129,4 +132,10 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.junit)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest           (libs.hilt.compiler)
+    // Google Truth をユニットテストで使えるように
+    testImplementation(libs.truth)
+    // AndroidInstrumentationTest でも Truth を使うなら
+    androidTestImplementation(libs.truth)
 }

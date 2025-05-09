@@ -1,34 +1,17 @@
 package com.oza.editnote.ui.theme
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import com.oza.editnote.R
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+// 日本語用フォントファミリー：
+// Noto Sans JP の各ウェイトを登録
+val NotoSansJP = FontFamily(
+    // 通常ウェイト（400）
+    Font(R.font.noto_sans_jp_regular, FontWeight.Normal),
+    // 中間ウェイト（500）
+    Font(R.font.noto_sans_jp_medium,  FontWeight.Medium),
+    // 太字ウェイト（700）
+    Font(R.font.noto_sans_jp_bold,    FontWeight.Bold)
 )

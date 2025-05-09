@@ -3,6 +3,9 @@ package com.oza.editnote.domain.usecase
 import com.oza.editnote.domain.model.Page
 import com.oza.editnote.domain.repository.PageRepository
 
+interface IGetPagesUseCase {
+    suspend operator fun invoke(): List<Page>
+}
 /**
  * ページ一覧取得用のユースケース
  *
@@ -10,8 +13,7 @@ import com.oza.editnote.domain.repository.PageRepository
  */
 class GetPagesUseCase(
     private val repository: PageRepository
-) {
-    suspend operator fun invoke(): List<Page> {
-        return repository.getPages()
-    }
+) : IGetPagesUseCase {
+    override suspend fun invoke(): List<Page> =
+        repository.getPages()
 }
