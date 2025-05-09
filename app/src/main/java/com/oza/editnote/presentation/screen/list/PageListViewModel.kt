@@ -39,11 +39,11 @@ open class PageListViewModel @Inject constructor(
 ) : ViewModel() {
 
     // UIの状態を管理するStateFlow
-    private val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
+    val _uiState = MutableStateFlow<PageListUiState>(PageListUiState.Loading)
     open val uiState: StateFlow<PageListUiState> = _uiState.asStateFlow()
 
     // 選択中のページID
-    private val _selectedPageId = MutableStateFlow<Int?>(null)
+    val _selectedPageId = MutableStateFlow<Int?>(null)
     open val selectedPageId: StateFlow<Int?> = _selectedPageId.asStateFlow()
 
     // 編集モードかどうか

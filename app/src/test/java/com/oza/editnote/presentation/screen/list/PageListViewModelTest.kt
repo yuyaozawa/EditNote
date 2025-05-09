@@ -4,6 +4,10 @@ import com.oza.editnote.domain.model.Page
 import com.oza.editnote.domain.usecase.CreatePageUseCase
 import com.oza.editnote.domain.usecase.DeletePageUseCase
 import com.oza.editnote.domain.usecase.GetPagesUseCase
+import com.oza.editnote.domain.usecase.ICreatePageUseCase
+import com.oza.editnote.domain.usecase.IDeletePageUseCase
+import com.oza.editnote.domain.usecase.IGetPagesUseCase
+import com.oza.editnote.domain.usecase.IUpdatePageUseCase
 import com.oza.editnote.domain.usecase.UpdatePageUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -21,33 +25,40 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PageListViewModelTest {
-    // --- モックを用意 ---
-    private val mockGetPagesUseCase    = mock<GetPagesUseCase>()
-    private val mockCreatePageUseCase  = mock<CreatePageUseCase>()
-    private val mockDeletePageUseCase  = mock<DeletePageUseCase>()
-    private val mockUpdatePageUseCase  = mock<UpdatePageUseCase>()
+    // モック化したユースケース
+    private val mockGetPagesUseCase   = mock<IGetPagesUseCase>()
+    private val mockCreatePageUseCase = mock<ICreatePageUseCase>()
+    private val mockDeletePageUseCase = mock<IDeletePageUseCase>()
+    private val mockUpdatePageUseCase = mock<IUpdatePageUseCase>()
 
+    // テスト用ディスパッチャ
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
-        // Main dispatcher をテスト用に差し替え
+        // Dispatchers.Main をテスト用に差し替える
         Dispatchers.setMain(testDispatcher)
     }
 
     @After
     fun tearDown() {
+        // 差し替えた Main を元に戻す
         Dispatchers.resetMain()
     }
 
+    /**
+     * loadPages() が正常終了したとき、
+     * ViewModel の uiState が PageListUiState.Success になり、
+     * 取得したページ一覧が格納されていることを検証
+     */
     @Test
     fun `loadPages_success updates Success state`() = runTest {
-        // Arrange
-        val expectedPages = listOf(Page(1, "A", "B"))
-        whenever(mockGetPagesUseCase()).thenReturn(expectedPages)
+        // Arrange: モックが正常にページリストを返すようにする
+        val expected = listOf(Page(1, "A", "B"))
+        whenever(mockGetPagesUseCase()).thenReturn(expected)
 
-        // VM を生成すると init で loadPages が呼ばれる
-        val viewModel = PageListViewModel(
+        // VM を生成（init ブロックで loadPages() が実行される）
+        val vm = PageListViewModel(
             getPagesUseCase   = mockGetPagesUseCase,
             createPageUseCase = mockCreatePageUseCase,
             deletePageUseCase = mockDeletePageUseCase,
@@ -57,32 +68,32 @@ class PageListViewModelTest {
         // Act: コルーチンを進める
         advanceUntilIdle()
 
-        // Assert
-        assertEquals(
-            PageListUiState.Success(expectedPages),
-            viewModel.uiState.value
-        )
+        // Assert: uiState が Success(expected) になっていること
+        assertEquals(PageListUiState.Success(expected), vm.uiState.value)
     }
 
+    /**
+     * loadPages() が例外をスローしたとき、
+     * ViewModel の uiState が PageListUiState.Error になり、
+     * 例外メッセージが格納されていることを検証
+     */
     @Test
     fun `loadPages_failure updates Error state`() = runTest {
-        // Arrange
+        // Arrange: モックが例外をスローするようにする
         whenever(mockGetPagesUseCase()).thenThrow(RuntimeException("fail"))
 
-        val viewModel = PageListViewModel(
+        // VM を生成
+        val vm = PageListViewModel(
             getPagesUseCase   = mockGetPagesUseCase,
             createPageUseCase = mockCreatePageUseCase,
             deletePageUseCase = mockDeletePageUseCase,
             updatePageUseCase = mockUpdatePageUseCase
         )
 
-        // Act
+        // Act: コルーチンを進める
         advanceUntilIdle()
 
-        // Assert
-        assertEquals(
-            PageListUiState.Error("fail"),
-            viewModel.uiState.value
-        )
+        // Assert: uiState が Error("fail") になっていること
+        assertEquals(PageListUiState.Error("fail"), vm.uiState.value)
     }
 }
