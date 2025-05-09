@@ -17,14 +17,27 @@ import javax.inject.Singleton
 object NetworkModule {
 
     /**
-     * installDebug の前に必ず adbReverse タスクで
-     * tcp:3000→tcp:3000 が設定されることを前提に、
-     * どのデバイス（エミュレータ／実機）でも
-     * localhost:3000 だけを返す実装に簡素化
+     * installDebug の前に必ず adbReverse タスクが走ることを前提に、
+     * AVD・Genymotionエミュレータはそれぞれのホストループバック
+     * (10.0.2.2／10.0.3.2)、物理実機は localhost:3000 を返す。
      */
     @Provides
     @Singleton
-    fun provideBaseUrl(): String = "http://localhost:3000"
+    fun provideBaseUrl(): String = when {
+        // Android 標準エミュレータ (AVD)
+        Build.FINGERPRINT.startsWith("generic") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MANUFACTURER.contains("Google") ->
+            "http://10.0.2.2:3000"
+
+        // Genymotion エミュレータ
+        Build.MANUFACTURER.contains("Genymotion") ->
+            "http://10.0.3.2:3000"
+
+        // 物理デバイス（adb reverse 併用想定）
+        else ->
+            "http://localhost:3000"
+    }
 
     /**
      * [provideBaseUrl] で得た URL を使って
