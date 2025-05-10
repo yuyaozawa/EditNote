@@ -34,14 +34,15 @@
 
 4. 実機／エミュレータでデバッグ
 
-   * `./gradlew installDebug` 実行前に自動で `adb reverse tcp:3000 tcp:3000` 設定
-   * 手動が必要なら:
-
+   Android Studio の **Run ▶︎** をクリック
+        
+    * ./gradlew installDebug を実行する前に自動で adb reverse tcp:3000 tcp:3000 が走る
+ 
+    * 万一自動で設定されない場合は手動で:
+    
      ```bash
      adb reverse tcp:3000 tcp:3000
      ```
-   * Android Studio の **Run ▶︎** をクリック
-
 # 📁 プロジェクト構成
 
 ```
