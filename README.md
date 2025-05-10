@@ -16,12 +16,14 @@
 1. リポジトリをクローン
 
    ```bash
-   git clone https://github.com/<ユーザ名>/EditNote.git
+   git clone https://github.com/yuyaozawa/EditNote.git
    cd EditNote
    ```
-2. バックエンド起動（localhost:3000）
+2. バックエンド起動　ローカル API: http://localhost:3000
 
+　　Nest.js サーバーをローカルで起動
    ```bash
+   git clone https://github.com/ncdcdev/recruit-frontend.git
    cd recruit-frontend
    npm install
    npm run migration:run
@@ -29,7 +31,7 @@
    ```
 3. Android Studio で開く、Gradle を同期
 
-5. 実機／エミュレータでデバッグ
+4. 実機／エミュレータでデバッグ
 
    * `./gradlew installDebug` 実行前に自動で `adb reverse tcp:3000 tcp:3000` 設定
    * 手動が必要なら:
