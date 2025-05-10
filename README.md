@@ -13,13 +13,7 @@
 
 # 🛠 環境構築
 
-1. リポジトリをクローン
-
-   ```bash
-   git clone https://github.com/yuyaozawa/EditNote.git
-   cd EditNote
-   ```
-2. バックエンド起動　ローカル API: http://localhost:3000
+1. バックエンド起動　ローカル API: http://localhost:3000
 
 　　Nest.js サーバーをローカルで起動
    ```bash
@@ -29,6 +23,13 @@
    npm run migration:run
    npm run start
    ```
+2. リポジトリをクローン
+
+   ```bash
+   git clone https://github.com/yuyaozawa/EditNote.git
+   cd EditNote
+   ```
+   
 3. Android Studio で開く、Gradle を同期
 
 4. 実機／エミュレータでデバッグ
